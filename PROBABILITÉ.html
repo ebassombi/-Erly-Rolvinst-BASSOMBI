@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorateur Interactif de Probabilités</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Visualization & Content Choices: 
+        - Écran d'Authentification: Objectif=Contrôler l'accès, Méthode=Formulaire HTML simple (champs texte, bouton), Interaction=Saisie de nom/code, validation au clic, affichage d'erreur, Justification=Sécuriser l'accès au contenu spécifique, Bibliothèque/Méthode=HTML, CSS (Tailwind), Vanilla JS.
+        - Résumé du Cours (Texte): Objectif=Informer/Expliquer, Méthode=HTML formaté pour la lisibilité (paragraphes, titres, listes), Interaction=Navigation entre sections, sections réductibles, Justification=Faciliter la lecture et la compréhension des concepts clés, Bibliothèque/Méthode=HTML, CSS (Tailwind), Vanilla JS.
+        - QCM Interactifs: Objectif=Tester/Renforcer la compréhension, Méthode=Formulaires HTML interactifs (boutons radio, boutons d'action), Interaction=Sélection de réponse, feedback immédiat (correction détaillée), navigation entre les questions et par chapitre, Justification=Permettre un apprentissage actif et une auto-évaluation structurée, Bibliothèque/Méthode=HTML, CSS (Tailwind), Vanilla JS pour la logique.
+        - Formules Mathématiques: Objectif=Présenter les notations mathématiques clairement, Méthode=Utilisation de balises HTML (<sub>, <sup>), entités HTML (&Sigma;, &int;, &le;, &lambda;, etc.) et Unicode, Interaction=Affichage statique, Justification=Assurer la lisibilité des formules dans les contraintes (pas de SVG), Bibliothèque/Méthode=HTML, CSS.
+        - Aide QCM (LLM): Objectif=Fournir des indices contextuels et des explications conceptuelles pour les QCM, Méthode=Bouton déclenchant un appel API à Gemini, affichant une réponse textuelle, Interaction=Clic sur le bouton pour obtenir une aide, Justification=Améliorer la compréhension sans donner la réponse directe, favoriser l'apprentissage autonome, Bibliothèque/Méthode=Vanilla JS, Gemini API (gemini-2.0-flash).
+        - PWA (Progressive Web App): Objectif=Rendre l'application installable comme une application native, Méthode=Manifeste web et Service Worker, Interaction=Option "Ajouter à l'écran d'accueil" du navigateur, Justification=Améliorer l'accessibilité et l'expérience utilisateur (offline, icône sur l'écran d'accueil), Bibliothèque/Méthode=HTML (meta tags, link manifest), Vanilla JS (Service Worker registration).
+    -->
+    <meta name="theme-color" content="#D97706">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRXhwbG9yYXRldXIgUHJvYmFiaWxpdMOpcyIsInNob3J0X25hbWUiOiJQcm9iYUFwcCIsImRlc2NyaXB0aW9uIjoiQXBwcmVuZXogZXQgdGVzdGV6IHZvcyBjb25uYWlzc2FuY2VzIGVuIHByb2JhYmlsaXTDqXMuIiwic3RhcnRfdXJsIjoiLi8iLCJkaXNwbGFheSI6InN0YW5kYWxvbmRlIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmNWY1ZjQiLCJ0aGVtZV9jb2xvciI6IiNEOTc3NDYiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9wbmc7YmFzZTY0LFFJQllOV29nSUNDQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVFQUFBQUVBNU9EUT0=">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .math-tex {
+            font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+        }
+        .active-nav-link {
+            border-bottom-width: 2px;
+            border-color: #D97706; /* amber-600 */
+            color: #D97706; /* amber-600 */
+            font-weight: 600;
+        }
+        .qcm-option-label:hover {
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .collapsible-content.open {
+            max-height: 10000px; /* Ajustez si nécessaire pour un contenu plus long */
+        }
+        .correction-details p {
+            margin-bottom: 0.5rem;
+        }
+        .correct-answer-highlight {
+            background-color: #D1FAE5; /* green-100 */
+            border-left: 4px solid #10B981; /* green-500 */
+        }
+        .user-correct-choice {
+             border: 2px solid #10B981; /* green-500 */
+        }
+        .user-incorrect-choice {
+            border: 2px solid #EF4444; /* red-500 */
+        }
+        .btn-primary {
+            background-color: #D97706; /* amber-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #B45309; /* amber-700 */
+        }
+        .btn-secondary {
+            background-color: #78716c; /* stone-500 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #57534e; /* stone-600 */
+        }
+        .llm-response {
+            background-color: #FEF3C7; /* amber-50 */
+            border-left: 4px solid #F59E0B; /* amber-500 */
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+            color: #78350F; /* amber-900 */
+        }
+        .llm-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            color: #F59E0B;
+        }
+        .llm-loading::after {
+            content: '';
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid #F59E0B;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Login screen specific styles */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        #app-content {
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-neutral-800 min-h-screen flex flex-col">
+
+    <div id="login-screen" class="w-full">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+            <h2 class="text-2xl font-bold text-amber-600 mb-6">Authentification Requise</h2>
+            <p class="text-neutral-700 mb-4">Veuillez entrer le nom et le code fournis par l'auteur pour accéder au contenu.</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="author-name" class="sr-only">Nom de l'auteur</label>
+                    <input type="text" id="author-name" placeholder="Nom de l'auteur" class="w-full p-3 border border-neutral-300 rounded-md focus:ring-amber-500 focus:border-amber-500" required>
+                </div>
+                <div>
+                    <label for="access-code" class="sr-only">Code d'accès</label>
+                    <input type="password" id="access-code" placeholder="Code d'accès" class="w-full p-3 border border-neutral-300 rounded-md focus:ring-amber-500 focus:border-amber-500" required>
+                </div>
+                <p id="login-error" class="text-red-600 text-sm hidden">Nom ou code incorrect. Veuillez réessayer.</p>
+                <button type="submit" class="btn-primary w-full">Accéder au contenu</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-content" class="flex flex-col flex-grow">
+        <header class="bg-white shadow-md sticky top-0 z-50">
+            <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+                <div class="text-2xl font-bold text-amber-600">Probabilités Faciles</div>
+                <div>
+                    <a href="#resume" class="text-neutral-700 hover:text-amber-600 px-3 py-2 rounded-md text-sm font-medium nav-link">Résumé du Cours</a>
+                    <a href="#qcm" class="text-neutral-700 hover:text-amber-600 px-3 py-2 rounded-md text-sm font-medium nav-link">QCM Interactifs</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container mx-auto px-6 py-8 flex-grow">
+            <section id="resume" class="mb-12 pt-16 -mt-16">
+                <h1 class="text-3xl font-bold text-neutral-800 mb-6 border-b-2 border-amber-600 pb-2">Résumé du Cours de Probabilités : La Pédagogie du Détour</h1>
+                <div class="bg-white p-6 rounded-lg shadow-lg space-y-4">
+                    <p class="italic">Imaginez que les probabilités sont comme un jeu de cartes. Chaque carte a une valeur, et la façon dont elles sont distribuées ou comment elles se comportent suit certaines règles. Ce cours vous donne les outils pour comprendre ce "jeu" et prédire ce qui pourrait se passer.</p>
+
+                    <div>
+                        <button class="collapsible-trigger text-2xl font-semibold text-amber-700 hover:text-amber-800 mb-2 w-full text-left flex justify-between items-center">
+                            1. Les Variables Aléatoires : Donner un Nom aux Résultats du Hasard
+                            <span class="arrow-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="collapsible-content space-y-3 pl-4">
+                            <p><strong>L'idée du détour :</strong> Quand vous lancez un dé, le résultat est incertain (1, 2, 3, 4, 5 ou 6). Une variable aléatoire, c'est juste un moyen de donner un nom numérique à ces résultats incertains.</p>
+                            <h4 class="font-semibold text-lg text-neutral-700">Variable Aléatoire Discrète : Pensez à des choses que vous pouvez <em>compter</em>.</h4>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Exemple :</strong> Le nombre de "pile" si vous lancez une pièce 3 fois (0, 1, 2 ou 3). Ou le nombre de voitures qui passent devant chez vous en une heure. Ces valeurs sont séparées, on ne peut pas avoir 1.5 "pile" ou 3.7 voitures.</li>
+                                <li><strong>Ce qu'il faut retenir :</strong> Pour ces variables, on a une <strong>fonction de masse de probabilité (<span class="math-tex">p<sub>X</sub>(x)</span>)</strong> qui vous dit la probabilité d'obtenir <em>exactement</em> une valeur donnée (ex: P(obtenir 2 piles) = 0.375). La somme de toutes ces probabilités doit toujours faire 1.</li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-neutral-700">Variable Aléatoire Continue : Pensez à des choses que vous <em>mesurez</em>.</h4>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Exemple :</strong> La taille d'un étudiant, le temps d'attente à un arrêt de bus. Ces valeurs peuvent prendre n'importe quelle valeur dans un intervalle (ex: 170.5 cm, 170.55 cm, etc.).</li>
+                                <li><strong>Ce qu'il faut retenir :</strong> Pour ces variables, on a une <strong>fonction de densité de probabilité (<span class="math-tex">f<sub>X</sub>(x)</span>)</strong>. Elle ne donne pas une probabilité directe pour une valeur unique (qui serait 0), mais la probabilité d'être dans un <em>intervalle</em> (l'aire sous la courbe). L'intégrale de cette fonction sur tout l'espace doit aussi faire 1.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="collapsible-trigger text-2xl font-semibold text-amber-700 hover:text-amber-800 mb-2 w-full text-left flex justify-between items-center">
+                            2. La Fonction de Répartition : La Probabilité Cumulative
+                            <span class="arrow-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="collapsible-content space-y-3 pl-4">
+                            <p><strong>L'idée du détour :</strong> Imaginez que vous empilez des probabilités. La fonction de répartition, c'est comme la hauteur de votre pile à un certain point. Elle vous dit la probabilité d'obtenir une valeur <em>inférieure ou égale</em> à un certain nombre.</p>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Définition :</strong> <span class="math-tex">F<sub>X</sub>(t) = P(X &le; t)</span>.</li>
+                                <li><strong>Propriétés essentielles :</strong>
+                                    <ul class="list-circle list-inside ml-6">
+                                        <li>Elle est toujours <strong>croissante</strong> (plus vous allez loin, plus la probabilité cumulative augmente ou reste la même).</li>
+                                        <li>Elle commence à 0 (quand <span class="math-tex">t &rarr; -&infin;</span>) et finit à 1 (quand <span class="math-tex">t &rarr; +&infin;</span>).</li>
+                                        <li>Pour une variable continue, <span class="math-tex">f<sub>X</sub>(t) = d/dt F<sub>X</sub>(t)</span> (la densité est la dérivée de la répartition).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="collapsible-trigger text-2xl font-semibold text-amber-700 hover:text-amber-800 mb-2 w-full text-left flex justify-between items-center">
+                            3. Espérance et Variance : Le Cœur et la Dispersion
+                            <span class="arrow-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="collapsible-content space-y-3 pl-4">
+                             <p><strong>L'idée du détour :</strong></p>
+                            <h4 class="font-semibold text-lg text-neutral-700">Espérance (<span class="math-tex">E(X)</span>) :</h4>
+                            <p>C'est la "moyenne" ou la "valeur attendue" de votre variable aléatoire. Si vous répétez l'expérience un très grand nombre de fois, c'est la valeur moyenne que vous obtiendriez.</p>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Exemple :</strong> L'espérance d'un lancer de dé équilibré est (1+2+3+4+5+6)/6 = 3.5.</li>
+                                <li><strong>Formule (discrète) :</strong> <span class="math-tex">&Sigma; x<sub>i</sub> &middot; p<sub>X</sub>(x<sub>i</sub>)</span></li>
+                                <li><strong>Formule (continue) :</strong> <span class="math-tex">&int; x &middot; f<sub>X</sub>(x) dx</span></li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-neutral-700">Variance (<span class="math-tex">Var(X)</span>) et Écart-type (<span class="math-tex">&sigma;<sub>X</sub></span>) :</h4>
+                            <p>Elles mesurent à quel point les résultats de votre variable aléatoire sont "dispersés" autour de cette moyenne.</p>
+                             <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Exemple :</strong> Deux classes peuvent avoir une moyenne de 12/20. Mais si dans l'une, les notes sont entre 11 et 13, et dans l'autre, entre 5 et 19, la seconde aura une plus grande variance.</li>
+                                <li><strong>Formule clé :</strong> <span class="math-tex">Var(X) = E(X<sup>2</sup>) - (E(X))<sup>2</sup></span>.</li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-neutral-700">Variable Centrée Réduite :</h4>
+                            <p>C'est une transformation qui rend la variable "standard". On lui soustrait sa moyenne et on la divise par son écart-type.</p>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                               <li><strong>Formule :</strong> <span class="math-tex">Y = (X - &mu;) / &sigma;</span>.</li>
+                               <li><strong>Propriété :</strong> Une variable centrée réduite a toujours une espérance de 0 et un écart-type de 1.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button class="collapsible-trigger text-2xl font-semibold text-amber-700 hover:text-amber-800 mb-2 w-full text-left flex justify-between items-center">
+                            4. Les Lois Usuelles : Les Modèles Préfabriqués
+                            <span class="arrow-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="collapsible-content space-y-3 pl-4">
+                            <p><strong>L'idée du détour :</strong> Certains types d'expériences aléatoires sont tellement courants qu'on a créé des "modèles" mathématiques pour les décrire.</p>
+                            <h4 class="font-semibold text-lg text-neutral-700">Lois Discrètes :</h4>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Bernoulli :</strong> Un seul essai avec deux issues (succès/échec). Exemple : Résultat d'un lancer de pièce.</li>
+                                <li><strong>Binomiale (<span class="math-tex">B(n, p)</span>) :</strong> Nombre de succès dans <span class="math-tex">n</span> essais de Bernoulli indépendants et identiques (avec remise). Exemple : Nombre de "Pile" en lançant une pièce 10 fois.</li>
+                                <li><strong>Poisson (<span class="math-tex">P(&lambda;)</span>) :</strong> Nombre d'événements rares dans un intervalle. Exemple : Nombre d'appels en une heure.</li>
+                                <li><strong>Géométrique (<span class="math-tex">G(p)</span>) :</strong> Nombre d'essais pour le premier succès. Exemple : Lancers de dé pour obtenir le premier 6.</li>
+                                <li><strong>Hypergéométrique :</strong> Tirages sans remise. Exemple : Tirer 3 as d'un jeu de cartes.</li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-neutral-700">Lois Continues :</h4>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Uniforme :</strong> Chaque valeur dans un intervalle a la même probabilité. Exemple : Générateur de nombres aléatoires [0,1].</li>
+                                <li><strong>Exponentielle :</strong> Durée de vie sans mémoire. Exemple : Temps avant la prochaine panne.</li>
+                                <li><strong>Normale (Gaussienne) :</strong> Courbe en cloche. Exemple : Distribution des tailles.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="collapsible-trigger text-2xl font-semibold text-amber-700 hover:text-amber-800 mb-2 w-full text-left flex justify-between items-center">
+                            5. Les Théorèmes de Convergence : Quand le Hasard Devient Prévisible
+                            <span class="arrow-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="collapsible-content space-y-3 pl-4">
+                            <p><strong>L'idée du détour :</strong> Ces théorèmes nous disent que même si les choses sont aléatoires, sur le long terme, elles se comportent de manière prévisible.</p>
+                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                <li><strong>Loi des Grands Nombres :</strong> Plus vous répétez une expérience, plus la moyenne de vos résultats se rapproche de l'espérance théorique.</li>
+                                <li><strong>Théorème de la Limite Centrale (TLC) :</strong> C'est le "super-héros" des statistiques. Il dit que si vous additionnez (ou faites la moyenne de) un grand nombre de variables aléatoires indépendantes, leur distribution tendra vers une loi normale, *quelle que soit leur distribution d'origine* !</li>
+                                <li><strong>Approximations :</strong>
+                                    <ul class="list-circle list-inside ml-6">
+                                        <li>Binomiale par Poisson : <span class="math-tex">n</span> grand, <span class="math-tex">p</span> petit.</li>
+                                        <li>Hypergéométrique par Binomiale : Population grande par rapport à l'échantillon.</li>
+                                        <li>Binomiale par Normale : <span class="math-tex">n</span> grand et <span class="math-tex">np(1-p)</span> assez grand.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                             <p>Avec ces concepts bien en tête, vous devriez être en mesure de traiter les QCM avec une meilleure compréhension. Bonne chance !</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="qcm" class="mb-12 pt-16 -mt-16">
+                <h1 class="text-3xl font-bold text-neutral-800 mb-6 border-b-2 border-amber-600 pb-2">QCM Interactifs</h1>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="mb-6 italic">Testez votre compréhension des concepts de probabilités. Choisissez un chapitre, répondez aux questions, puis vérifiez vos réponses avec les corrections détaillées.</p>
+                    
+                    <div class="mb-6">
+                        <label for="chapitre-select" class="block text-sm font-medium text-neutral-700 mb-1">Choisir un chapitre :</label>
+                        <select id="chapitre-select" class="block w-full p-2 border border-neutral-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                            <option value="all">Tous les chapitres (25 questions)</option>
+                            <option value="chap1">Chapitre 1 : Rappels et Compléments (10 questions)</option>
+                            <option value="chap2">Chapitre 2 : Variables Aléatoires à Densité (5 questions)</option>
+                            <option value="chap3">Chapitre 3 : Convergences (5 questions)</option>
+                            <option value="chap4">Chapitre 4 : Lois Discrètes Usuelles (5 questions)</option>
+                        </select>
+                    </div>
+
+                    <div id="qcm-container" class="space-y-6">
+                        </div>
+                    <div id="qcm-navigation" class="mt-6 flex justify-between items-center">
+                        </div>
+                     <div id="qcm-score" class="mt-4 text-lg font-semibold text-neutral-700"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-neutral-800 text-white text-center p-4">
+            <p class="mb-2">&copy; 2024 Explorateur Interactif de Probabilités. Créé pour faciliter l'apprentissage.</p>
+            <p class="text-sm">Ce cours avec interactions est produit par l'étudiant **Erly Rolvinst BASSOMBI**, fidèlement encadré par le **Docteur P.C BATSINDILA NGANGA**, assistant à l'Université Denis SASSOU N'GUESSO. C'est grâce à son cours que ceci est construit.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Service Worker registration
+        // The service worker content is defined as a string and then registered as a Blob URL.
+        // This allows keeping everything within a single HTML file.
+        const serviceWorkerContent = `
+            const CACHE_NAME = 'proba-app-cache-v2'; // Increment cache version for updates
+            const urlsToCache = [
+                './', // index.html
+                './index.html',
+                'https://cdn.tailwindcss.com'
+                // No other external JS libraries are used via CDN that need explicit caching here
+                // as Chart.js and Plotly.js are not required by the prompt's updated requirements.
+            ];
+
+            self.addEventListener('install', (event) => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            console.log('Service Worker: Caching essential app shell');
+                            return cache.addAll(urlsToCache);
+                        })
+                        .catch(error => {
+                            console.error('Service Worker: Failed to cache during install:', error);
+                        })
+                );
+            });
+
+            self.addEventListener('fetch', (event) => {
+                event.respondWith(
+                    caches.match(event.request)
+                        .then(response => {
+                            // Cache hit - return response
+                            if (response) {
+                                return response;
+                            }
+                            // Not in cache - fetch from network
+                            return fetch(event.request)
+                                .then(networkResponse => {
+                                    // Check if we received a valid response
+                                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                                        return networkResponse;
+                                    }
+                                    // IMPORTANT: Clone the response. A response is a stream
+                                    // and can only be consumed once. We must clone it so that
+                                    // the browser can consume one and we can consume the other.
+                                    const responseToCache = networkResponse.clone();
+                                    caches.open(CACHE_NAME)
+                                        .then(cache => {
+                                            cache.put(event.request, responseToCache);
+                                        });
+                                    return networkResponse;
+                                })
+                                .catch(error => {
+                                    console.error('Service Worker: Fetch failed:', error);
+                                    // You could return a fallback page here for offline
+                                    // For now, just let the fetch error propagate
+                                });
+                        })
+                );
+            });
+
+            self.addEventListener('activate', (event) => {
+                const cacheWhitelist = [CACHE_NAME];
+                event.waitUntil(
+                    caches.keys().then(cacheNames => {
+                        return Promise.all(
+                            cacheNames.map(cacheName => {
+                                if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                    console.log('Service Worker: Deleting old cache:', cacheName);
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        );
+                    })
+                );
+            });
+        `;
+
+        // Create a Blob URL for the Service Worker content
+        const serviceWorkerBlob = new Blob([serviceWorkerContent], { type: 'application/javascript' });
+        const serviceWorkerBlobUrl = URL.createObjectURL(serviceWorkerBlob);
+
+        // Register the Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(serviceWorkerBlobUrl, { scope: './' })
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+
+        // --- Authentication Logic ---
+        const loginScreen = document.getElementById('login-screen');
+        const appContent = document.getElementById('app-content');
+        const loginForm = document.getElementById('login-form');
+        const authorNameInput = document.getElementById('author-name');
+        const accessCodeInput = document.getElementById('access-code');
+        const loginError = document.getElementById('login-error');
+
+        const CORRECT_NAME = "De Erly Rolvinst";
+        const CORRECT_CODE = "1985";
+
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const enteredName = authorNameInput.value.trim();
+            const enteredCode = accessCodeInput.value.trim();
+
+            if (enteredName === CORRECT_NAME && enteredCode === CORRECT_CODE) {
+                loginScreen.style.display = 'none';
+                appContent.style.display = 'flex'; // Show main content
+                // Initialize app content after successful login
+                renderNavLinks();
+                filterQcms();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // --- Existing QCM and App Logic ---
+        const qcmsData = [
+            // Chapitre 1
+            {
+                chapitre: "chap1",
+                questionText: "Quelle est la propriété fondamentale d'une fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t)</span> pour une variable aléatoire <span class=\"math-tex\">X</span>?",
+                options: [
+                    "Elle est strictement décroissante.",
+                    "Elle est continue à gauche.",
+                    "Elle est croissante.",
+                    "Sa valeur maximale est &infin;."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Elle est croissante.",
+                    justification: "Une fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t) = P(X &le; t)</span> représente la probabilité cumulative. Si <span class=\"math-tex\">t<sub>1</sub> < t<sub>2</sub></span>, alors l'événement <span class=\"math-tex\">(X &le; t<sub>1</sub>)</span> est un sous-ensemble de l'événement <span class=\"math-tex\">(X &le; t<sub>2</sub>)</span>, donc <span class=\"math-tex\">P(X &le; t<sub>1</sub>) &le; P(X &le; t<sub>2</sub>)</span>. Par conséquent, <span class=\"math-tex\">F<sub>X</sub>(t<sub>1</sub>) &le; F<sub>X</sub>(t<sub>2</sub>)</span>, ce qui signifie que <span class=\"math-tex\">F<sub>X</sub>(t)</span> est une fonction croissante.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Elle est strictly décroissante : C'est l'inverse de la propriété fondamentale.",
+                        "b) Elle est continue à gauche : Une fonction de répartition est toujours continue à droite, pas nécessairement à gauche.",
+                        "d) Sa valeur maximale est &infin; : La probabilité maximale est 1, donc <span class=\"math-tex\">F<sub>X</sub>(t)</span> tend vers 1 quand <span class=\"math-tex\">t &rarr; +&infin;</span>."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Si <span class=\"math-tex\">X</span> est une variable aléatoire réelle, comment est définie sa fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t)</span> ?",
+                options: [
+                    "<span class=\"math-tex\">P(X = t)</span>",
+                    "<span class=\"math-tex\">P(X < t)</span>",
+                    "<span class=\"math-tex\">P(X &le; t)</span>",
+                    "<span class=\"math-tex\">P(X > t)</span>"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">P(X &le; t)</span>",
+                    justification: "La définition standard de la fonction de répartition est la probabilité que la variable aléatoire prenne une valeur inférieure ou égale à <span class=\"math-tex\">t</span>. C'est une convention universelle en théorie des probabilités.",
+                     pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) <span class=\"math-tex\">P(X = t)</span> : C'est la fonction de masse de probabilité pour une variable discrète, ou 0 pour une variable continue en un point.",
+                        "b) <span class=\"math-tex\">P(X < t)</span> : Ceci est <span class=\"math-tex\">F<sub>X</sub>(t<sup>-</sup>)</span>, qui peut différer de <span class=\"math-tex\">F<sub>X</sub>(t)</span> en cas de sauts.",
+                        "d) <span class=\"math-tex\">P(X > t)</span> : Ceci est généralement <span class=\"math-tex\">1 - F<sub>X</sub>(t)</span>."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Pour toute fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t)</span>, quelle est la valeur de <span class=\"math-tex\">lim<sub>t&rarr;+&infin;</sub>F<sub>X</sub>(t)</span> ?",
+                options: ["0", "1", "-&infin;", "+&infin;"],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) 1",
+                    justification: "Au fur et à mesure que <span class=\"math-tex\">t</span> augmente, l'événement <span class=\"math-tex\">(X &le; t)</span> devient de plus en plus certain. La probabilité d'un événement certain est 1.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) 0 : C'est la limite quand <span class=\"math-tex\">t &rarr; -&infin;</span>.",
+                        "c) -&infin; et d) +&infin; : Une probabilité est toujours bornée entre 0 et 1."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Si <span class=\"math-tex\">X</span> est une variable aléatoire discrète, que représente <span class=\"math-tex\">p<sub>X</sub>(x<sub>i</sub>)</span> où <span class=\"math-tex\">x<sub>i</sub></span> est une des valeurs possibles de <span class=\"math-tex\">X</span>?",
+                options: [
+                    "La probabilité que <span class=\"math-tex\">X</span> soit inférieur à <span class=\"math-tex\">x<sub>i</sub></span>.",
+                    "La probabilité que <span class=\"math-tex\">X</span> soit supérieur à <span class=\"math-tex\">x<sub>i</sub></span>.",
+                    "La probabilité que <span class=\"math-tex\">X</span> soit égal à <span class=\"math-tex\">x<sub>i</sub></span>.",
+                    "La valeur de la fonction de répartition en <span class=\"math-tex\">x<sub>i</sub></span>."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) La probabilité que <span class=\"math-tex\">X</span> soit égal à <span class=\"math-tex\">x<sub>i</sub></span>.",
+                    justification: "Pour une variable aléatoire discrète, la fonction de masse de probabilité <span class=\"math-tex\">p<sub>X</sub>(x<sub>i</sub>)</span> est définie comme <span class=\"math-tex\">P(X = x<sub>i</sub>)</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) et b) : Ces options décrivent d'autres types de probabilités, pas la fonction de masse.",
+                        "d) La fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(x<sub>i</sub>)</span> est la somme des <span class=\"math-tex\">p<sub>X</sub>(x<sub>j</sub>)</span> pour tous les <span class=\"math-tex\">x<sub>j</sub> &le; x<sub>i</sub></span>."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Pour une variable aléatoire discrète <span class=\"math-tex\">X</span> prenant des valeurs dans un ensemble <span class=\"math-tex\">A</span>, quelle est la propriété que la somme de toutes les probabilités <span class=\"math-tex\">p<sub>X</sub>(x<sub>i</sub>)</span> doit satisfaire ?",
+                options: [
+                    "<span class=\"math-tex\">&Sigma;<sub>x<sub>i</sub> &isin; A</sub> p<sub>X</sub>(x<sub>i</sub>) = 0</span>",
+                    "<span class=\"math-tex\">&Sigma;<sub>x<sub>i</sub> &isin; A</sub> p<sub>X</sub>(x<sub>i</sub>) = 1</span>",
+                    "<span class=\"math-tex\">&Sigma;<sub>x<sub>i</sub> &isin; A</sub> p<sub>X</sub>(x<sub>i</sub>) > 1</span>",
+                    "La somme peut être n'importe quelle valeur positive."
+                ],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) <span class=\"math-tex\">&Sigma;<sub>x<sub>i</sub> &isin; A</sub> p<sub>X</sub>(x<sub>i</sub>) = 1</span>",
+                    justification: "C'est une propriété fondamentale : la somme des probabilités de tous les résultats possibles doit être égale à 1.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a), c), d) : Ces options contredisent la définition d'une distribution de probabilité."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Quelle est la formule correcte pour calculer l'espérance <span class=\"math-tex\">E(X)</span> d'une variable aléatoire discrète <span class=\"math-tex\">X</span> qui prend les valeurs <span class=\"math-tex\">x<sub>i</sub></span> avec les probabilités <span class=\"math-tex\">p<sub>X</sub>(x<sub>i</sub>)</span> ?",
+                options: [
+                    "<span class=\"math-tex\">E(X) = &Sigma;<sub>x<sub>i</sub></sub> p<sub>X</sub>(x<sub>i</sub>)</span>",
+                    "<span class=\"math-tex\">E(X) = &Sigma;<sub>x<sub>i</sub></sub> x<sub>i</sub></span>",
+                    "<span class=\"math-tex\">E(X) = &Sigma;<sub>x<sub>i</sub></sub> x<sub>i</sub> &middot; p<sub>X</sub>(x<sub>i</sub>)</span>",
+                    "<span class=\"math-tex\">E(X) = &Sigma;<sub>x<sub>i</sub></sub> x<sub>i</sub><sup>2</sup> &middot; p<sub>X</sub>(x<sub>i</sub>)</span>"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">E(X) = &Sigma;<sub>x<sub>i</sub></sub> x<sub>i</sub> &middot; p<sub>X</sub>(x<sub>i</sub>)</span>",
+                    justification: "L'espérance est la moyenne pondérée des valeurs possibles, où chaque valeur est pondérée par sa probabilité.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Ceci est égal à 1.",
+                        "b) Ceci ne tient pas compte des probabilités.",
+                        "d) Ceci est <span class=\"math-tex\">E(X<sup>2</sup>)</span>."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Si <span class=\"math-tex\">X</span> est une variable aléatoire discrète, quelle est la formule pour l'espérance d'une fonction <span class=\"math-tex\">g(X)</span> ?",
+                options: [
+                    "<span class=\"math-tex\">E(g(X)) = g(E(X))</span>",
+                    "<span class=\"math-tex\">E(g(X)) = &Sigma;<sub>x<sub>i</sub></sub> g(x<sub>i</sub>)</span>",
+                    "<span class=\"math-tex\">E(g(X)) = &Sigma;<sub>x<sub>i</sub></sub> g(x<sub>i</sub>) &middot; p<sub>X</sub>(x<sub>i</sub>)</span>",
+                    "<span class=\"math-tex\">E(g(X)) = &Sigma;<sub>x<sub>i</sub></sub> x<sub>i</sub> &middot; g(p<sub>X</sub>(x<sub>i</sub>))</span>"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">E(g(X)) = &Sigma;<sub>x<sub>i</sub></sub> g(x<sub>i</sub>) &middot; p<sub>X</sub>(x<sub>i</sub>)</span>",
+                    justification: "On remplace <span class=\"math-tex\">x<sub>i</sub></span> par <span class=\"math-tex\">g(x<sub>i</sub>)</span> dans la formule de l'espérance, en pondérant par <span class=\"math-tex\">p<sub>X</sub>(x<sub>i</sub>)</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Vrai uniquement pour les fonctions linéaires.",
+                        "b) Ne tient pas compte des probabilités.",
+                        "d) Formule incorrecte."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Soit <span class=\"math-tex\">X</span> une variable aléatoire avec <span class=\"math-tex\">E(X) = &mu;</span>. Quelle est l'espérance de la variable aléatoire <span class=\"math-tex\">(X - &mu;)</span> ?",
+                options: [
+                    "<span class=\"math-tex\">E(X - &mu;) = &mu;</span>",
+                    "<span class=\"math-tex\">E(X - &mu;) = 1</span>",
+                    "<span class=\"math-tex\">E(X - &mu;) = 0</span>",
+                    "<span class=\"math-tex\">E(X - &mu;) = E(X) - E(&mu;)</span>"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">E(X - &mu;) = 0</span>",
+                    justification: "Par linéarité de l'espérance : <span class=\"math-tex\">E(X - &mu;) = E(X) - E(&mu;) = &mu; - &mu; = 0</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a), b) Incorrect.",
+                        "d) Bien que correcte comme étape, la réponse finale est 0."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Quelle est la formule correcte pour la variance <span class=\"math-tex\">Var(X)</span> d'une variable aléatoire <span class=\"math-tex\">X</span> ?",
+                options: [
+                    "<span class=\"math-tex\">Var(X) = E(X)<sup>2</sup> - E(X<sup>2</sup>)</span>",
+                    "<span class=\"math-tex\">Var(X) = E(X<sup>2</sup>) - (E(X))<sup>2</sup></span>",
+                    "<span class=\"math-tex\">Var(X) = E(X) - E(X<sup>2</sup>)</span>",
+                    "<span class=\"math-tex\">Var(X) = E(X<sup>2</sup>) + (E(X))<sup>2</sup></span>"
+                ],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) <span class=\"math-tex\">Var(X) = E(X<sup>2</sup>) - (E(X))<sup>2</sup></span>",
+                    justification: "C'est la formule de König-Huygens, dérivée de <span class=\"math-tex\">Var(X) = E((X - E(X))<sup>2</sup>)</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Ordre inversé, pourrait donner une variance négative.",
+                        "c), d) Formules incorrectes."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap1",
+                questionText: "Une variable aléatoire centrée réduite est une variable <span class=\"math-tex\">Y</span> construite à partir d'une variable aléatoire <span class=\"math-tex\">X</span> de moyenne <span class=\"math-tex\">&mu;</span> et d'écart-type <span class=\"math-tex\">&sigma;</span>. Comment est définie <span class=\"math-tex\">Y</span>?",
+                options: [
+                    "<span class=\"math-tex\">Y = X - &mu;</span>",
+                    "<span class=\"math-tex\">Y = X / &sigma;</span>",
+                    "<span class=\"math-tex\">Y = (X - &mu;) / &sigma;</span>",
+                    "<span class=\"math-tex\">Y = (X + &mu;) / &sigma;</span>"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">Y = (X - &mu;) / &sigma;</span>",
+                    justification: "Centrer (<span class=\"math-tex\">-&mu;</span>) rend l'espérance nulle, réduire (<span class=\"math-tex\">/&sigma;</span>) rend la variance (et l'écart-type) égale à 1.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Centre mais ne réduit pas.",
+                        "b) Réduit mais ne centre pas.",
+                        "d) Formule incorrecte."
+                    ]
+                }
+            },
+            // Chapitre 2
+             {
+                chapitre: "chap2",
+                questionText: "Pour une variable aléatoire continue <span class=\"math-tex\">X</span>, comment peut-on obtenir la fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t)</span> à partir de la fonction de densité de probabilité <span class=\"math-tex\">f<sub>X</sub>(x)</span> ?",
+                options: [
+                    "<span class=\"math-tex\">F<sub>X</sub>(t) = &int;<sub>-&infin;</sub><sup>t</sup> f<sub>X</sub>(x) dx</span>",
+                    "<span class=\"math-tex\">F<sub>X</sub>(t) = f<sub>X</sub>(t)</span>",
+                    "<span class=\"math-tex\">F<sub>X</sub>(t) = d/dt f<sub>X</sub>(t)</span>",
+                    "<span class=\"math-tex\">F<sub>X</sub>(t) = &int;<sub>-&infin;</sub><sup>+&infin;</sup> f<sub>X</sub>(x) dx</span>"
+                ],
+                correctOptionIndex: 0,
+                correction: {
+                    reponseCorrecte: "a) <span class=\"math-tex\">F<sub>X</sub>(t) = &int;<sub>-&infin;</sub><sup>t</sup> f<sub>X</sub>(x) dx</span>",
+                    justification: "La fonction de répartition est l'intégrale de la fonction de densité de <span class=\"math-tex\">-&infin;</span> à <span class=\"math-tex\">t</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "b) La densité n'est pas une probabilité.",
+                        "c) C'est l'inverse : <span class=\"math-tex\">f<sub>X</sub>(t) = d/dt F<sub>X</sub>(t)</span>.",
+                        "d) Cette intégrale vaut toujours 1."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap2",
+                questionText: "Si <span class=\"math-tex\">X</span> suit une loi uniforme sur l'intervalle <span class=\"math-tex\">[a, b]</span>, quelle est sa fonction de densité de probabilité <span class=\"math-tex\">f<sub>X</sub>(x)</span> pour <span class=\"math-tex\">x &isin; [a, b]</span> ?",
+                options: [
+                    "<span class=\"math-tex\">f<sub>X</sub>(x) = 1 / (b-a)</span>",
+                    "<span class=\"math-tex\">f<sub>X</sub>(x) = (b-a)</span>",
+                    "<span class=\"math-tex\">f<sub>X</sub>(x) = 1</span>",
+                    "<span class=\"math-tex\">f<sub>X</sub>(x) = x / (b-a)</span>"
+                ],
+                correctOptionIndex: 0,
+                correction: {
+                    reponseCorrecte: "a) <span class=\"math-tex\">f<sub>X</sub>(x) = 1 / (b-a)</span>",
+                    justification: "La densité est constante et son intégrale sur <span class=\"math-tex\">[a,b]</span> doit valoir 1. L'aire d'un rectangle est base * hauteur, donc <span class=\"math-tex\">(b-a) * hauteur = 1</span>.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "b), c) L'intégrale ne serait pas 1 (sauf cas particulier pour c).",
+                        "d) Ce n'est pas une densité constante."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap2",
+                questionText: "Laquelle de ces propriétés est caractéristique de la loi exponentielle ?",
+                options: [
+                    "Elle est symétrique.",
+                    "Elle a une mémoire.",
+                    "Elle est sans mémoire.",
+                    "Sa densité est constante."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Elle est sans mémoire.",
+                    justification: "La propriété 'sans mémoire' signifie que la probabilité d'un événement futur ne dépend pas du passé. C'est une caractéristique clé.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Elle est asymétrique à droite.",
+                        "b) C'est l'opposé.",
+                        "d) Sa densité est <span class=\"math-tex\">&lambda;e<sup>-&lambda;x</sup></span>, non constante."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap2",
+                questionText: "Pour une variable aléatoire continue <span class=\"math-tex\">X</span> avec fonction de densité <span class=\"math-tex\">f<sub>X</sub>(x)</span>, l'espérance <span class=\"math-tex\">E(X)</span> est donnée par :",
+                options: [
+                    "<span class=\"math-tex\">E(X) = &int;<sub>-&infin;</sub><sup>+&infin;</sup> f<sub>X</sub>(x) dx</span>",
+                    "<span class=\"math-tex\">E(X) = &int;<sub>-&infin;</sub><sup>+&infin;</sup> x &middot; f<sub>X</sub>(x) dx</span>",
+                    "<span class=\"math-tex\">E(X) = &int;<sub>-&infin;</sub><sup>t</sup> f<sub>X</sub>(x) dx</span>",
+                    "<span class=\"math-tex\">E(X) = f<sub>X</sub>(0)</span>"
+                ],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) <span class=\"math-tex\">E(X) = &int;<sub>-&infin;</sub><sup>+&infin;</sup> x &middot; f<sub>X</sub>(x) dx</span>",
+                    justification: "C'est l'équivalent de la somme pondérée pour les variables discrètes, mais avec une intégrale.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) C'est la probabilité totale, égale à 1.",
+                        "c) C'est la fonction de répartition <span class=\"math-tex\">F<sub>X</sub>(t)</span>.",
+                        "d) La densité en un point n'est pas l'espérance."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap2",
+                questionText: "Quelle est la forme générale de la fonction de densité de probabilité d'une loi normale (Gaussienne) ?",
+                options: [
+                    "Une fonction exponentielle décroissante.",
+                    "Une fonction constante sur un intervalle donné.",
+                    "Une courbe en forme de cloche, symétrique autour de sa moyenne.",
+                    "Une série de pics à des points discrets."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Une courbe en forme de cloche, symétrique autour de sa moyenne.",
+                    justification: "La loi normale est caractérisée par sa forme de 'cloche' symétrique.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Correspond à la loi exponentielle.",
+                        "b) Correspond à la loi uniforme.",
+                        "d) Décrit une distribution discrète."
+                    ]
+                }
+            },
+            // Chapitre 3
+            {
+                chapitre: "chap3",
+                questionText: "Le théorème de la loi des grands nombres affirme que la moyenne d'un grand nombre d'échantillons indépendants et identiquement distribués tend vers :",
+                options: [
+                    "L'écart-type de la population.",
+                    "La variance de la population.",
+                    "La moyenne de la population.",
+                    "Zéro."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) La moyenne de la population.",
+                    justification: "Plus on observe d'échantillons, plus la moyenne empirique se rapproche de l'espérance (moyenne théorique).",
+                     pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a), b) Incorrect.",
+                        "d) La moyenne tend vers la moyenne de la population, pas nécessairement zéro."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap3",
+                questionText: "Quelle loi peut être approchée par la loi de Poisson lorsque le nombre d'essais <span class=\"math-tex\">n</span> est grand et la probabilité de succès <span class=\"math-tex\">p</span> est petite (<span class=\"math-tex\">np</span> restant constant) ?",
+                options: ["Loi uniforme", "Loi géométrique", "Loi binomiale", "Loi normale"],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Loi binomiale",
+                    justification: "La loi de Poisson approxime la binomiale pour des événements rares sur un grand nombre d'essais.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a), b) Pas d'approximation directe par Poisson dans ce contexte.",
+                        "d) La binomiale peut être approchée par la normale sous d'autres conditions."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap3",
+                questionText: "Dans quelles conditions la loi hypergéométrique peut-elle être approchée par la loi binomiale ?",
+                options: [
+                    "Lorsque le nombre de tirages est très grand.",
+                    "Lorsque la taille de la population est très grande par rapport au nombre de tirages.",
+                    "Lorsque la probabilité de succès est très petite.",
+                    "Lorsque les tirages sont effectués avec remise."
+                ],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) Lorsque la taille de la population est très grande par rapport au nombre de tirages.",
+                    justification: "Si la population est grande, tirer sans remise a un effet négligeable sur les probabilités, se rapprochant des tirages avec remise (binomiale).",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Pas suffisant sans la condition sur la taille de la population.",
+                        "c) Mène plutôt à l'approximation par Poisson.",
+                        "d) Si les tirages sont avec remise, c'est déjà une loi binomiale."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap3",
+                questionText: "Quel théorème est fondamental pour justifier l'utilisation de la loi normale pour approcher la distribution de la moyenne d'un grand nombre d'échantillons, quelle que soit la distribution d'origine ?",
+                options: [
+                    "La loi des grands nombres",
+                    "Le théorème de Bayes",
+                    "Le théorème de la limite centrale (TLC)",
+                    "Le théorème de Moivre-Laplace"
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Le théorème de la limite centrale (TLC)",
+                    justification: "Le TLC stipule que la somme/moyenne de nombreuses variables aléatoires i.i.d. tend vers une distribution normale.",
+                     pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Concerne la convergence de la moyenne vers l'espérance.",
+                        "b) Concerne les probabilités conditionnelles.",
+                        "d) Est un cas particulier du TLC pour la loi binomiale."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap3",
+                questionText: "Selon votre cours, pour qu'une approximation d'une loi binomiale <span class=\"math-tex\">B(n, p)</span> par une loi normale <span class=\"math-tex\">N(&mu;, &sigma;<sup>2</sup>)</span> soit valide, quelles conditions sur <span class=\"math-tex\">n</span> et <span class=\"math-tex\">p</span> sont généralement requises ?",
+                options: [
+                    "<span class=\"math-tex\">n</span> petit et <span class=\"math-tex\">p</span> grand.",
+                    "<span class=\"math-tex\">n &ge; 30</span> et <span class=\"math-tex\">np(1-p) &ge; 15</span>.",
+                    "<span class=\"math-tex\">n</span> et <span class=\"math-tex\">p</span> doivent être proches de 0.5.",
+                    "<span class=\"math-tex\">n</span> très grand et <span class=\"math-tex\">p</span> très petit."
+                ],
+                correctOptionIndex: 1,
+                correction: {
+                    reponseCorrecte: "b) <span class=\"math-tex\">n &ge; 30</span> et <span class=\"math-tex\">np(1-p) &ge; 15</span>.",
+                    justification: "Ce sont des règles empiriques courantes pour que la distribution binomiale soit suffisamment symétrique pour une bonne approximation normale.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Conditions incorrectes.",
+                        "c) <span class=\"math-tex\">p</span> proche de 0.5 aide à la symétrie, mais <span class=\"math-tex\">n</span> doit être grand.",
+                        "d) Mène à l'approximation par Poisson."
+                    ]
+                }
+            },
+            // Chapitre 4
+            {
+                chapitre: "chap4",
+                questionText: "La loi de Bernoulli modélise :",
+                options: [
+                    "Le nombre de succès dans <span class=\"math-tex\">n</span> essais indépendants.",
+                    "Le temps d'attente avant le premier succès.",
+                    "Le résultat d'une seule expérience avec deux issues possibles (succès/échec).",
+                    "Le nombre d'événements rares sur un intervalle donné."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Le résultat d'une seule expérience avec deux issues possibles (succès/échec).",
+                    justification: "C'est la plus simple des lois discrètes, décrivant une expérience unique avec deux issues.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) C'est la loi binomiale.",
+                        "b) C'est la loi géométrique (ou exponentielle pour le continu).",
+                        "d) C'est la loi de Poisson."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap4",
+                questionText: "Quel est le paramètre unique de la loi de Poisson <span class=\"math-tex\">P(&lambda;)</span> et que représente-t-il ?",
+                options: [
+                    "<span class=\"math-tex\">n</span>, le nombre d'essais.",
+                    "<span class=\"math-tex\">p</span>, la probabilité de succès.",
+                    "<span class=\"math-tex\">&lambda;</span>, le nombre moyen d'événements.",
+                    "<span class=\"math-tex\">k</span>, le nombre de succès observés."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) <span class=\"math-tex\">&lambda;</span>, le nombre moyen d'événements.",
+                    justification: "<span class=\"math-tex\">&lambda;</span> est l'espérance et la variance du nombre d'occurrences d'un événement rare.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Paramètre de la loi binomiale.",
+                        "b) Paramètre des lois de Bernoulli et binomiale.",
+                        "d) Une valeur que la variable aléatoire peut prendre."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap4",
+                questionText: "Dans une loi binomiale <span class=\"math-tex\">B(n, p)</span>, que représente le paramètre <span class=\"math-tex\">n</span> ?",
+                options: [
+                    "La probabilité d'un succès.",
+                    "Le nombre de succès observés.",
+                    "Le nombre total d'essais indépendants.",
+                    "La moyenne des succès."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Le nombre total d'essais indépendants.",
+                    justification: "La loi binomiale modélise le nombre de succès dans une séquence de <span class=\"math-tex\">n</span> essais de Bernoulli indépendants et identiques.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) C'est le paramètre <span class=\"math-tex\">p</span>.",
+                        "b) C'est la variable aléatoire elle-même.",
+                        "d) C'est l'espérance <span class=\"math-tex\">E(X) = np</span>."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap4",
+                questionText: "Quelle loi de probabilité discrète est utilisée pour modéliser le nombre de tirages nécessaires pour obtenir le premier succès, sachant que chaque tirage est indépendant et a la même probabilité de succès <span class=\"math-tex\">p</span>?",
+                options: ["Loi binomiale négative", "Loi hypergéométrique", "Loi géométrique", "Loi de Bernoulli"],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Loi géométrique",
+                    justification: "La loi géométrique modélise spécifiquement le nombre d'essais jusqu'au premier succès.",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) Modélise le nombre d'essais pour <span class=\"math-tex\">r</span> succès.",
+                        "b) Modélise les tirages sans remise.",
+                        "d) Modélise un seul essai."
+                    ]
+                }
+            },
+            {
+                chapitre: "chap4",
+                questionText: "La loi hypergéométrique diffère de la loi binomiale principalement par le fait que les tirages sont effectués :",
+                options: [
+                    "Avec une probabilité de succès variable.",
+                    "Avec remise.",
+                    "Sans remise, à partir d'une population finie.",
+                    "Pour un nombre infini d'essais."
+                ],
+                correctOptionIndex: 2,
+                correction: {
+                    reponseCorrecte: "c) Sans remise, à partir d'une population finie.",
+                    justification: "C'est la distinction clé : la binomiale suppose des tirages avec remise (ou population infinie), l'hypergéométrique sans remise (population finie).",
+                    pourquoiAutresIncorrectesTitle: "Pourquoi les autres options sont incorrectes :",
+                    pourquoiAutresIncorrectes: [
+                        "a) La probabilité change à cause du tirage sans remise, ce n'est pas une variabilité intrinsèque.",
+                        "b) C'est le cas de la loi binomiale.",
+                        "d) Opère sur des populations finies."
+                    ]
+                }
+            }
+        ];
+
+        const qcmContainer = document.getElementById('qcm-container');
+        const chapitreSelect = document.getElementById('chapitre-select');
+        const qcmNavigation = document.getElementById('qcm-navigation');
+        const qcmScoreDiv = document.getElementById('qcm-score');
+        
+        let currentQcms = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // Store user answers {qIndex: {selectedOption: index, isCorrect: bool}}
+        let score = 0;
+        let questionsAttempted = 0;
+
+        function renderNavLinks() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            
+            function updateActiveLink() {
+                let currentSectionId = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100; // Adjusted for sticky header
+                    if (window.scrollY >= sectionTop) {
+                        currentSectionId = section.id;
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav-link');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active-nav-link');
+                    }
+                });
+            }
+            window.addEventListener('scroll', updateActiveLink);
+            updateActiveLink(); // Initial call
+        }
+
+
+        function renderQCM(qIndex) {
+            if (qIndex < 0 || qIndex >= currentQcms.length) return;
+            const qcm = currentQcms[qIndex];
+            qcmContainer.innerHTML = `
+                <div class="bg-stone-50 p-6 rounded-lg shadow">
+                    <p class="text-lg font-semibold mb-4">Question ${qIndex + 1}/${currentQcms.length}:</p>
+                    <p class="mb-4 text-neutral-700">${qcm.questionText}</p>
+                    <div class="space-y-2">
+                        ${qcm.options.map((option, index) => `
+                            <label class="qcm-option-label flex items-center p-3 border border-neutral-300 rounded-md cursor-pointer transition-colors">
+                                <input type="radio" name="qcmOption_${qIndex}" value="${index}" class="mr-3 h-4 w-4 text-amber-600 border-neutral-300 focus:ring-amber-500" ${userAnswers[qIndex] && userAnswers[qIndex].selectedOption === index ? 'checked' : ''} ${userAnswers[qIndex] ? 'disabled' : ''}>
+                                <span>${String.fromCharCode(97 + index)}) ${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        <button id="verifyBtn_${qIndex}" class="btn-primary" ${userAnswers[qIndex] ? 'style="display:none;"' : ''}>Vérifier</button>
+                        <button id="llmHintBtn_${qIndex}" class="btn-secondary">✨ Obtenir une Aide ✨</button>
+                    </div>
+                    <div id="correction_${qIndex}" class="mt-4 hidden correction-details p-4 border-l-4 rounded"></div>
+                    <div id="llmResponse_${qIndex}" class="mt-4 hidden llm-response"></div>
+                </div>
+            `;
+
+            document.querySelectorAll(`input[name="qcmOption_${qIndex}"]`).forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    if (!userAnswers[qIndex]) { // Only process if not already answered
+                        userAnswers[qIndex] = { selectedOption: parseInt(event.target.value) };
+                    }
+                });
+            });
+            
+            const verifyBtn = document.getElementById(`verifyBtn_${qIndex}`);
+            if (verifyBtn) {
+                verifyBtn.addEventListener('click', () => showCorrection(qIndex));
+            }
+
+            const llmHintBtn = document.getElementById(`llmHintBtn_${qIndex}`);
+            if (llmHintBtn) {
+                llmHintBtn.addEventListener('click', () => getLLMHint(qIndex));
+            }
+
+            if (userAnswers[qIndex]) { // If already answered, show correction immediately
+                showCorrection(qIndex, false); // false to not re-calculate score
+            }
+            renderQCMNavigation();
+            updateScoreDisplay();
+        }
+
+        async function getLLMHint(qIndex) {
+            const qcm = currentQcms[qIndex];
+            const llmResponseDiv = document.getElementById(`llmResponse_${qIndex}`);
+            llmResponseDiv.innerHTML = '<div class="llm-loading">Génération de l\'aide...</div>';
+            llmResponseDiv.classList.remove('hidden');
+
+            const prompt = `Je suis un étudiant en probabilités. Voici une question à choix multiples sur laquelle j'aimerais une aide. Ne donne PAS la réponse directe, mais explique le concept sous-jacent ou donne un indice pour m'aider à réfléchir.
+
+Question: ${qcm.questionText.replace(/<[^>]*>/g, '')}
+Options:
+${qcm.options.map((opt, idx) => `${String.fromCharCode(97 + idx)}) ${opt}`).join('\n')}
+
+Donne une explication concise ou un indice pour aider à résoudre ce problème de probabilité.`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Leave as-is
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    llmResponseDiv.innerHTML = `<p>${text}</p>`;
+                } else {
+                    llmResponseDiv.innerHTML = `<p class="text-red-600">Désolé, je n'ai pas pu générer d'aide pour le moment. Veuillez réessayer.</p>`;
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                llmResponseDiv.innerHTML = `<p class="text-red-600">Une erreur est survenue lors de la connexion à l'IA. Veuillez vérifier votre connexion ou réessayer plus tard.</p>`;
+            }
+        }
+
+        function showCorrection(qIndex, calculateScore = true) {
+            const qcm = currentQcms[qIndex];
+            const correctionDiv = document.getElementById(`correction_${qIndex}`);
+            const verifyBtn = document.getElementById(`verifyBtn_${qIndex}`);
+            const radioButtons = document.querySelectorAll(`input[name="qcmOption_${qIndex}"]`);
+
+            if (!userAnswers[qIndex] || userAnswers[qIndex].selectedOption === undefined) {
+                 correctionDiv.innerHTML = `<p class="text-red-600">Veuillez sélectionner une réponse avant de vérifier.</p>`;
+                 correctionDiv.classList.remove('hidden');
+                 correctionDiv.classList.remove('correct-answer-highlight');
+                 correctionDiv.classList.add('border-red-500');
+                 return;
+            }
+
+            const selectedOptionIndex = userAnswers[qIndex].selectedOption;
+            const isCorrect = selectedOptionIndex === qcm.correctOptionIndex;
+
+            if (calculateScore && userAnswers[qIndex].isCorrect === undefined) { // Only update score if not already calculated
+                questionsAttempted++;
+                if (isCorrect) {
+                    score++;
+                }
+                userAnswers[qIndex].isCorrect = isCorrect;
+            }
+            
+            let correctionHTML = `<h4 class="font-semibold text-lg mb-2">Correction :</h4>`;
+            correctionHTML += `<p><strong class="text-amber-700">Réponse correcte :</strong> ${qcm.correction.reponseCorrecte}</p>`;
+            correctionHTML += `<p><strong>Justification :</strong> ${qcm.correction.justification}</p>`;
+            if (qcm.correction.pourquoiAutresIncorrectesTitle && qcm.correction.pourquoiAutresIncorrectes.length > 0) {
+                correctionHTML += `<p class="font-semibold mt-2">${qcm.correction.pourquoiAutresIncorrectesTitle}</p><ul class="list-disc list-inside ml-4 text-sm">`;
+                qcm.correction.pourquoiAutresIncorrectes.forEach(expl => correctionHTML += `<li>${expl}</li>`);
+                correctionHTML += `</ul>`;
+            }
+
+            correctionDiv.innerHTML = correctionHTML;
+            correctionDiv.classList.remove('hidden');
+            correctionDiv.classList.remove('border-red-500');
+
+
+            radioButtons.forEach((radio, index) => {
+                radio.disabled = true;
+                const label = radio.parentElement;
+                label.classList.remove('user-correct-choice', 'user-incorrect-choice');
+                if (index === selectedOptionIndex) {
+                    label.classList.add(isCorrect ? 'user-correct-choice' : 'user-incorrect-choice');
+                }
+            });
+            
+            correctionDiv.classList.toggle('correct-answer-highlight', isCorrect);
+            correctionDiv.classList.toggle('border-red-500', !isCorrect);
+            if (!isCorrect) correctionDiv.classList.add('border-red-500'); else correctionDiv.classList.add('border-green-500');
+
+
+            if (verifyBtn) verifyBtn.style.display = 'none';
+            updateScoreDisplay();
+        }
+        
+        function updateScoreDisplay() {
+            if (currentQcms.length > 0) {
+                 qcmScoreDiv.textContent = `Score : ${score} / ${questionsAttempted} (sur ${currentQcms.length} questions)`;
+            } else {
+                qcmScoreDiv.textContent = '';
+            }
+        }
+
+        function renderQCMNavigation() {
+            let prevDisabled = currentQuestionIndex === 0;
+            let nextDisabled = currentQuestionIndex === currentQcms.length - 1;
+
+            qcmNavigation.innerHTML = `
+                <button id="prevQcmBtn" class="btn-secondary" ${prevDisabled ? 'disabled' : ''}>&larr; Précédente</button>
+                <span class="text-neutral-600">Question ${currentQuestionIndex + 1} sur ${currentQcms.length}</span>
+                <button id="nextQcmBtn" class="btn-primary" ${nextDisabled ? 'disabled' : ''}>Suivante &rarr; </button>
+            `;
+            if(currentQcms.length === 0) qcmNavigation.innerHTML = "";
+
+
+            document.getElementById('prevQcmBtn')?.addEventListener('click', () => {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    renderQCM(currentQuestionIndex);
+                }
+            });
+            document.getElementById('nextQcmBtn')?.addEventListener('click', () => {
+                if (currentQuestionIndex < currentQcms.length - 1) {
+                    currentQuestionIndex++;
+                    renderQCM(currentQuestionIndex);
+                }
+            });
+        }
+        
+        function filterQcms() {
+            const selectedChapitre = chapitreSelect.value;
+            if (selectedChapitre === "all") {
+                currentQcms = qcmsData;
+            } else {
+                currentQcms = qcmsData.filter(qcm => qcm.chapitre === selectedChapitre);
+            }
+            currentQuestionIndex = 0;
+            userAnswers = {}; // Reset answers when chapter changes
+            score = 0;
+            questionsAttempted = 0;
+            if(currentQcms.length > 0){
+                renderQCM(currentQuestionIndex);
+            } else {
+                qcmContainer.innerHTML = "<p class='text-center text-neutral-500'>Aucun QCM disponible pour cette sélection.</p>";
+                qcmNavigation.innerHTML = "";
+            }
+            updateScoreDisplay();
+        }
+
+        chapitreSelect.addEventListener('change', filterQcms);
+
+        // Collapsible sections
+        document.querySelectorAll('.collapsible-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const arrow = this.querySelector('.arrow-icon');
+                content.classList.toggle('open');
+                arrow.classList.toggle('rotate-180');
+                 // Close other open sections
+                document.querySelectorAll('.collapsible-content.open').forEach(openContent => {
+                    if (openContent !== content) {
+                        openContent.classList.remove('open');
+                        openContent.previousElementSibling.querySelector('.arrow-icon').classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+        
+        // Initialisation (moved inside login success)
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     renderNavLinks();
+        //     filterQcms(); // Initial load of QCMs
+        // });
+
+    </script>
+</body>
+</html>
